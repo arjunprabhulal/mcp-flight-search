@@ -35,9 +35,36 @@ def test_format_flights():
     result = format_flights(SAMPLE)
     assert len(result) == 2
     assert result[0].airline == "Delta" and result[0].stops == "Nonstop" and result[0].duration == "330 min"
+    assert result[0].layovers == []
     assert result[0].departure == "Hartsfield-Jackson (ATL) at 2026-11-02 08:00"
     assert result[1].stops == "1 stop(s)"
     assert format_flights({}) == []
+
+
+def test_layovers_formatting_and_fallback():
+    data = {
+        "best_flights": [
+            {
+                "price": 340,
+                "total_duration": 520,
+                "flights": [{"airline": "United"}, {"airline": "United"}],
+                "layovers": [
+                    {"name": "Denver International Airport", "id": "DEN", "duration": 95, "overnight": True},
+                ],
+            },
+            {
+                "price": 310,
+                "total_duration": 440,
+                "flights": [
+                    {"airline": "American", "arrival_airport": {"name": "Dallas/Fort Worth", "id": "DFW"}},
+                    {"airline": "American"},
+                ],
+            },
+        ]
+    }
+    result = format_flights(data)
+    assert result[0].layovers == ["Denver International Airport (DEN) - 1h 35m, overnight"]
+    assert result[1].layovers == ["Dallas/Fort Worth (DFW)"]
 
 
 async def test_missing_key(monkeypatch):

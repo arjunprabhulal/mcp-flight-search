@@ -51,7 +51,7 @@ docker run -i --rm -e SERP_API_KEY=your-serpapi-key mcp-flight-search
 
 | Tool | What it does |
 | --- | --- |
-| `search_flights_tool` | Flights between two airports. `origin`, `destination`: IATA codes such as `ATL`, `LAX`. `outbound_date`: `YYYY-MM-DD`. `return_date` (optional): `YYYY-MM-DD` for a round trip. Returns structured results: airline, price (USD), duration, stops, departure, arrival, cabin class. |
+| `search_flights_tool` | Flights between two airports. `origin`, `destination`: IATA codes such as `ATL`, `LAX`. `outbound_date`: `YYYY-MM-DD`. `return_date` (optional): `YYYY-MM-DD` for a round trip. Returns structured results: airline, price (USD), duration, stops, layovers, departure, arrival, cabin class. |
 | `server_status` | Checks the server is running and reports its version. |
 
 ## Development

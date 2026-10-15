@@ -24,6 +24,7 @@ class Flight(BaseModel):
     price: str = Field(description="Total price in USD, or N/A")
     duration: str = Field(description="Total duration, such as '345 min'")
     stops: str = Field(description="'Nonstop' or the number of stops")
+    layovers: list[str] = Field(default_factory=list, description="Layover airports and durations for connecting flights")
     departure: str = Field(description="First departure airport and time")
     arrival: str = Field(description="First leg's arrival airport and time")
     travel_class: str = Field(description="Cabin class, such as Economy")
@@ -66,6 +67,35 @@ def _airport(leg: dict[str, Any], key: str) -> str:
     return f"{airport.get('name', 'Unknown')} ({airport.get('id', '???')}) at {airport.get('time', 'N/A')}"
 
 
+def _layover_duration(minutes: Any) -> str | None:
+    if not isinstance(minutes, int) or minutes <= 0:
+        return None
+    return f"{minutes // 60}h {minutes % 60}m" if minutes >= 60 else f"{minutes}m"
+
+
+def _layovers(itinerary: dict[str, Any], legs: list[dict[str, Any]]) -> list[str]:
+    layovers = itinerary.get("layovers") or []
+    if layovers:
+        details = []
+        for lo in layovers:
+            if not isinstance(lo, dict):
+                continue
+            name = lo.get("name", "Unknown")
+            code = lo.get("id")
+            airport = f"{name} ({code})" if code else name
+            meta = [m for m in (_layover_duration(lo.get("duration")), "overnight" if lo.get("overnight") else None) if m]
+            details.append(f"{airport} - {', '.join(meta)}" if meta else airport)
+        return details
+    stops = []
+    for leg in legs[:-1]:
+        airport = leg.get("arrival_airport")
+        if isinstance(airport, dict) and (airport.get("name") or airport.get("id")):
+            name = airport.get("name", "Unknown")
+            code = airport.get("id")
+            stops.append(f"{name} ({code})" if code else name)
+    return stops
+
+
 def format_flights(results: dict[str, Any]) -> list[Flight]:
     """Every itinerary in a SerpApi response, the best ones first, with the first leg's details for each.
     Some flights (often regional carriers) appear only under other_flights."""
@@ -81,6 +111,7 @@ def format_flights(results: dict[str, Any]) -> list[Flight]:
             price=str(itinerary.get("price", "N/A")),
             duration=f"{duration} min" if duration is not None else "N/A",
             stops="Nonstop" if len(legs) == 1 else f"{len(legs) - 1} stop(s)",
+            layovers=_layovers(itinerary, legs),
             departure=_airport(first, "departure_airport"),
             arrival=_airport(first, "arrival_airport"),
             travel_class=first.get("travel_class", "Economy"),
