@@ -1,10 +1,6 @@
-#!/usr/bin/env python3
-"""
-MCP Flight Search
+"""Run the server from a source checkout: python main.py --connection_type stdio"""
 
-Main entry point for the Flight Search MCP Server.
-"""
 from mcp_flight_search.server import main
 
 if __name__ == "__main__":
-    main() 
+    main()

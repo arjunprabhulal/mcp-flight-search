@@ -1,11 +1,8 @@
-"""
-MCP Flight Search package.
+"""MCP server that searches Google Flights through SerpApi."""
 
-A flight search service implementing Anthropic's Model Context Protocol (MCP).
-This package provides MCP-compliant tools that allow AI models to search
-for flight information using structured tool calls.
-"""
+from importlib.metadata import PackageNotFoundError, version
 
-__version__ = "0.2.0"
-
-from mcp_flight_search.models.schemas import FlightInfo 
+try:
+    __version__ = version("mcp-flight-search")
+except PackageNotFoundError:  # running from a source checkout
+    __version__ = "0.0.0"

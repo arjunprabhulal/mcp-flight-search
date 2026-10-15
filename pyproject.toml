@@ -1,38 +1,54 @@
 [build-system]
-requires = ["setuptools>=65.5.1", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
 
 [project]
 name = "mcp-flight-search"
-version = "0.2.0"
-description = "Flight search service implementing  Model Context Protocol (MCP) tools"
+version = "0.3.0"
+description = "MCP server that searches Google Flights through SerpApi"
 readme = "README.md"
-authors = [
-    {name = "Arjun Prabhulal", email = "code.aicloudlab@gmail.com"}
-]
 license = "MIT"
-requires-python = ">=3.7"
+license-files = ["LICENSE"]
+authors = [{ name = "Arjun Prabhulal" }]
+requires-python = ">=3.10"
+keywords = ["mcp", "model-context-protocol", "flights", "serpapi", "google-flights"]
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Operating System :: OS Independent",
 ]
 dependencies = [
-    "fastmcp",
-    "google-search-results",
-    "rich",
-    "pydantic",
-    "python-dotenv",
+  "mcp>=2.3,<3",
+  "serpapi>=1.1,<2",
+  "pydantic>=2.7,<3",
+  "python-dotenv>=1.0,<2",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/arjunprabhulal/mcp-flight-search"
-"Bug Tracker" = "https://github.com/arjunprabhulal/mcp-flight-search/issues"
+Homepage = "https://github.com/arjunprabhulal/mcp-flight-search"
+Issues = "https://github.com/arjunprabhulal/mcp-flight-search/issues"
 
 [project.scripts]
 mcp-flight-search = "mcp_flight_search.server:main"
 
-[tool.setuptools]
-packages = ["mcp_flight_search", 
-            "mcp_flight_search.models", 
-            "mcp_flight_search.services", 
-            "mcp_flight_search.utils"] 
+[dependency-groups]
+dev = ["pytest>=8.3", "anyio>=4.5", "ruff>=0.14"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["mcp_flight_search"]
+
+[tool.pytest.ini_options]
+anyio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 130
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

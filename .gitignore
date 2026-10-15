@@ -36,4 +36,7 @@ ENV/
 
 # OS specific files
 .DS_Store
-Thumbs.db 
+Thumbs.db .venv/
+dist/
+__pycache__/
+.env

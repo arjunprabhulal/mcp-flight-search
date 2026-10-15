@@ -1,96 +1,67 @@
 # MCP Flight Search
-<a href="https://glama.ai/mcp/servers/@arjunprabhulal/mcp-flight-search">
-  <img width="380" height="200" src="https://glama.ai/mcp/servers/@arjunprabhulal/mcp-flight-search/badge" />
-</a>
 
-A flight search service built with Model Context Protocol (MCP). This service demonstrates how to implement MCP tools for flight search capabilities.
+<!-- mcp-name: io.github.arjunprabhulal/mcp-flight-search -->
 
-## What is Model Context Protocol?
+An MCP server that searches Google Flights through [SerpApi](https://serpapi.com/google-flights-api), for Claude, Cursor and other MCP clients. One-way and round-trip searches by IATA airport code, with prices, durations, stops and times.
 
-The Model Context Protocol (MCP) is a standard developed by Anthropic that enables AI models to use tools by defining a structured format for tool descriptions, calls, and responses. This project implements MCP tools that can be used by Claude and other MCP-compatible models.
+[![CI](https://github.com/arjunprabhulal/mcp-flight-search/actions/workflows/ci.yml/badge.svg)](https://github.com/arjunprabhulal/mcp-flight-search/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/mcp-flight-search)](https://pypi.org/project/mcp-flight-search/)
 
-## Installation
+## Requirements
+
+- Python 3.10 or later (or [uv](https://docs.astral.sh/uv/))
+- A SerpApi key in `SERP_API_KEY` (serpapi.com has a free tier)
+
+## Use it from an MCP client
+
+Add it to your client's MCP configuration (Claude Desktop, Claude Code, Cursor, ...):
+
+```json
+{
+  "mcpServers": {
+    "flight-search": {
+      "command": "uvx",
+      "args": ["mcp-flight-search"],
+      "env": { "SERP_API_KEY": "your-serpapi-key" }
+    }
+  }
+}
+```
+
+Or install it with `pip install mcp-flight-search` and use `"command": "mcp-flight-search"`.
+
+## Run it yourself
 
 ```bash
-# Install from PyPI
-pip install mcp-flight-search
-
-# Or install from the project directory (development mode)
-pip install -e .
+export SERP_API_KEY="your-serpapi-key"
+mcp-flight-search                                    # stdio (default)
+mcp-flight-search --connection_type http --port 3001 # Streamable HTTP at http://127.0.0.1:3001/mcp
 ```
 
-## Usage
+`LOG_LEVEL=DEBUG` shows more detail on stderr. The API key is never logged.
 
-Start the MCP server:
+With Docker:
 
 ```bash
-# Using the command-line entry point
-mcp-flight-search --connection_type http
-
-# Or run directly
-python main.py --connection_type http
+docker build -t mcp-flight-search .
+docker run -i --rm -e SERP_API_KEY=your-serpapi-key mcp-flight-search
 ```
 
-You can also specify a custom port:
+## Tools
+
+| Tool | What it does |
+| --- | --- |
+| `search_flights_tool` | Flights between two airports. `origin`, `destination`: IATA codes such as `ATL`, `LAX`. `outbound_date`: `YYYY-MM-DD`. `return_date` (optional): `YYYY-MM-DD` for a round trip. Returns structured results: airline, price (USD), duration, stops, departure, arrival, cabin class. |
+| `server_status` | Checks the server is running and reports its version. |
+
+## Development
+
 ```bash
-python main.py --connection_type http --port 5000
+uv sync
+uv run pytest
+uv run ruff check .
 ```
-
-## Environment Variables
-
-Set the SerpAPI key as an environment variable:
-```bash
-export SERP_API_KEY="your-api-key-here"
-```
-
-## Features
-
-- MCP-compliant tools for flight search functionality
-- Integration with SerpAPI Google Flights
-- Support for one-way and round-trip flights
-- Rich logging with structured output
-- Modular, maintainable code structure
-
-## MCP Tools
-
-This package provides the following Model Context Protocol tools:
-
-- `search_flights_tool`: Search for flights between airports with parameters:
-  - `origin`: Departure airport code (e.g., ATL, JFK)
-  - `destination`: Arrival airport code (e.g., LAX, ORD)
-  - `outbound_date`: Departure date (YYYY-MM-DD)
-  - `return_date`: Optional return date for round trips (YYYY-MM-DD)
-
-- `server_status`: Check if the MCP server is running
-
-## Project Structure
-
-```
-mcp-flight-search/
-├── mcp_flight_search/
-│   ├── __init__.py              # Package initialization and exports
-│   ├── config.py                # Configuration variables (API keys)
-│   ├── models/
-│   │   ├── __init__.py          # Models package init
-│   │   └── schemas.py           # Pydantic models (FlightInfo)
-│   ├── services/
-│   │   ├── __init__.py          # Services package init
-│   │   ├── search_service.py    # Main flight search logic
-│   │   └── serpapi_client.py    # SerpAPI client wrapper
-│   ├── utils/
-│   │   ├── __init__.py          # Utils package init
-│   │   └── logging.py           # Logging configuration
-│   └── server.py                # MCP server setup and tool registration
-├── main.py                      # Main entry point
-├── pyproject.toml               # Python packaging configuration
-├── LICENSE                      # MIT License
-└── README.md                    # Project documentation
-```
-
-## Author
-
-For more articles on AI/ML and Generative AI, follow me on Medium: https://medium.com/@arjun-prabhulal
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+MIT

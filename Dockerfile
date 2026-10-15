@@ -1,17 +1,8 @@
-FROM python:3.11-slim
-
+FROM python:3.13-slim
+COPY --from=ghcr.io/astral-sh/uv:0.12.21 /uv /usr/local/bin/uv
 WORKDIR /app
-
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy package files
-COPY mcp_flight_search/ ./mcp_flight_search/
-COPY main.py pyproject.toml README.md LICENSE ./
-
-# Install the package
-RUN pip install -e .
-
-# Run in stdio mode by default
-ENTRYPOINT ["python", "-m", "mcp_flight_search.server", "--connection_type", "stdio"] 
+COPY pyproject.toml uv.lock README.md LICENSE ./
+COPY mcp_flight_search ./mcp_flight_search
+RUN uv sync --frozen --no-dev
+ENV PATH="/app/.venv/bin:$PATH"
+ENTRYPOINT ["mcp-flight-search"]
