@@ -23,6 +23,14 @@ def test_one_way_and_round_trip_params():
     assert round_trip["type"] == "1" and round_trip["return_date"] == "2026-11-09"
 
 
+def test_other_flights_are_included_after_the_best():
+    other = [{"price": 150, "total_duration": 500, "flights": [{"airline": "Spirit"}]}]
+    result = format_flights({**SAMPLE, "other_flights": other})
+    assert [f.airline for f in result] == ["Delta", "United", "Spirit"]
+    only_other = format_flights({"other_flights": [{"price": 99, "flights": [{"airline": "Regional Air"}]}]})
+    assert only_other[0].airline == "Regional Air"
+
+
 def test_format_flights():
     result = format_flights(SAMPLE)
     assert len(result) == 2

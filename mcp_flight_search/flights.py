@@ -67,9 +67,10 @@ def _airport(leg: dict[str, Any], key: str) -> str:
 
 
 def format_flights(results: dict[str, Any]) -> list[Flight]:
-    """The best flights in a SerpApi response, with the first leg's details for each itinerary."""
+    """Every itinerary in a SerpApi response, the best ones first, with the first leg's details for each.
+    Some flights (often regional carriers) appear only under other_flights."""
     flights = []
-    for itinerary in results.get("best_flights") or []:
+    for itinerary in [*(results.get("best_flights") or []), *(results.get("other_flights") or [])]:
         legs = itinerary.get("flights") or []
         if not legs:
             continue
