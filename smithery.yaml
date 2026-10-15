@@ -5,30 +5,10 @@ startCommand:
     properties:
       serp_api_key:
         type: string
-        description: "SerpAPI key for Google Flights searches"
-      debug:
-        type: boolean
-        description: "Enable debug logging"
-        default: false
-      default_connection_type:
-        type: string
-        description: "Default connection type (http or stdio)"
-        enum: ["http", "stdio"]
-        default: "stdio"
+        description: "SerpApi key for Google Flights searches"
     required: ["serp_api_key"]
     additionalProperties: false
   commandFunction: |
     function generateCommand(config) {
-      const args = ["-m", "mcp_flight_search.server", "--connection_type", config.default_connection_type || "stdio"];
-      
-      const env = {
-        SERP_API_KEY: config.serp_api_key,
-        DEBUG: config.debug ? "1" : "0"
-      };
-      
-      return {
-        command: "python",
-        args: args,
-        env: env
-      };
-    } 
+      return { command: "mcp-flight-search", args: [], env: { SERP_API_KEY: config.serp_api_key } };
+    }

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.arjunprabhulal/mcp-flight-search",
+  "title": "Flight Search",
+  "description": "Search Google Flights through SerpApi: one-way and round-trip flights by IATA airport code.",
+  "repository": {
+    "url": "https://github.com/arjunprabhulal/mcp-flight-search",
+    "source": "github"
+  },
+  "version": "0.3.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "mcp-flight-search",
+      "version": "0.3.0",
+      "runtimeHint": "uvx",
+      "transport": { "type": "stdio" },
+      "environmentVariables": [
+        {
+          "name": "SERP_API_KEY",
+          "description": "Your SerpApi key (serpapi.com)",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
